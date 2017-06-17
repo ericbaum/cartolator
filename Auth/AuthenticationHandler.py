@@ -1,3 +1,11 @@
+#############################
+# Data collector for CartolaFC
+#
+# Developed by Eric Baum
+#
+# Copyright, 2017 - Eric Baum
+#############################
+
 import requests
 from pathlib import Path
 from requests import HTTPError
@@ -42,7 +50,7 @@ class AuthenticationHandler:
         header = {'X-GLB-Token': token}
         resp = requests.get(url=VALIDOR_URL, headers=header)
         resp.raise_for_status()
-        print("Current token is still valid!")
+        print("O token ainda é válido!")
 
     def _authenticate(self):
         url = GLOBO_LOGIN_URL
@@ -64,6 +72,6 @@ class AuthenticationHandler:
             return ""
 
         glb_token = resp.json().get('glbId')
-        print("Authenticated user %s with success" % self.email)
+        print("Usuário %s autenticado com sucesso" % self.email)
 
         return glb_token
