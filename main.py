@@ -11,6 +11,35 @@ from Auth.AuthenticationHandler import AuthenticationHandler
 from Team.TeamManager import TeamManager
 
 
+def app_loop(team_manager):
+    dont_exit = True
+
+    while dont_exit:
+        print()
+        print("Escolha um número:")
+        print(" 1 - Ver time")
+        print(" 2 - Recarregar time atual")
+        print(" 3 - Gerar escalação randômica")
+        print(" 4 - Salvar escalação")
+        print(" 5 - Sair")
+        choice = input("Opção?")
+
+        if choice == "1":
+            team_manager.print_team_info()
+        elif choice == "2":
+            team_manager.load_team_data()
+        elif choice == "3":
+            team_manager.generate_random_team()
+        elif choice == "4":
+            team_manager.save_team()
+        elif choice == "5":
+            dont_exit = False
+        else:
+            print("Opção inválida")
+
+    return
+
+
 def main():
     # Gather execution arguments
     parser = argparse.ArgumentParser('Login to cartola and collect some data.\n Parameters: ')
@@ -24,7 +53,9 @@ def main():
 
     # Initialize the team manager
     team_manager = TeamManager(glb_token)
-    team_manager.print_team_info()
+
+    app_loop(team_manager)
+    print("Tchau!")
 
 if __name__ == "__main__":
     main()
