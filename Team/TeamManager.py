@@ -10,9 +10,13 @@ import requests
 import random
 import operator
 
+from requests import HTTPError
+
 TEAM_DATA_URL = 'https://api.cartolafc.globo.com/auth/time'
 MERCADO_URL = 'https://api.cartolafc.globo.com/atletas/mercado'
 ESQUEMAS_URL = 'https://api.cartolafc.globo.com/esquemas'
+SAVE_URL = 'https://api.cartolafc.globo.com/auth/time/salvar'
+STATUS_URL = 'https://api.cartolafc.globo.com/mercado/status'
 
 
 class TeamManager:
@@ -30,6 +34,7 @@ class TeamManager:
         self.esquema = ''
         self.atletas = []
         self.new_team = []
+        self.new_team_esquema = 0
         self.posicoes = {}
         self.esquemas = []
         self.mercado = {'goleiro': ''}
@@ -53,6 +58,9 @@ class TeamManager:
                 self.esquema = esquema['nome']
                 break
         self.atletas = team_json['atletas']
+
+        self.new_team = []
+        self.new_team_esquema = 0
 
     def _load_market(self):
         mercado_data = requests.get(MERCADO_URL)
@@ -115,6 +123,7 @@ class TeamManager:
             team_value += novo_atleta[2]
 
         self.new_team = random_team
+        self.new_team_esquema = esquema['esquema_id']
         self.valor_time = team_value
         self.esquema = esquema['nome']
         self.atletas = []
@@ -126,9 +135,37 @@ class TeamManager:
         print("Valor do time: %.2f" % team_value)
         print("Atletas: ")
         for atleta in random_team:
-            print(' - ' + atleta[1])
+            print(' - ' + self.posicoes[str(atleta[3])]['nome'] + ': - ' + atleta[1])
 
     def save_team(self):
+
+        if not self.new_team:
+            print("\nNão existe um novo time para ser salvo")
+            return
+
+        mercado_status = requests.get(STATUS_URL)
+        if mercado_status.json()['status_mercado'] == 2:
+            print("\nNão foi possível salvar, mercado fechado!")
+            return
+
+        save_body = {"esquema": self.new_team_esquema,
+                     "atleta": []}
+
+        for atleta in self.new_team:
+            save_body['atleta'].append(atleta[0])
+
+        try:
+            save_data = requests.post(SAVE_URL, json=save_body, headers=self.headers)
+            save_data.raise_for_status()
+        except HTTPError as error:
+            if save_data.status_code == 409:
+                print("\nNão foi possível salvar, mercado fechado!")
+            else:
+                print(save_data.status_code)
+                print(save_data.json())
+            return
+
+        print()
         print("Time salvo!")
 
     def print_team_info(self):

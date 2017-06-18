@@ -1,5 +1,5 @@
 #############################
-# Data collector for CartolaFC
+# Cartola Automator for CartolaFC
 #
 # Developed by Eric Baum
 #
@@ -55,7 +55,7 @@ def main():
     team_manager = TeamManager(glb_token)
 
     app_loop(team_manager)
-    print("Tchau!")
+    print("\nTchau!")
 
 if __name__ == "__main__":
     main()
