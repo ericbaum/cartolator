@@ -37,7 +37,7 @@ class TeamManager:
         self.new_team_esquema = 0
         self.posicoes = {}
         self.esquemas = []
-        self.mercado = {'goleiro': ''}
+        self.mercado = {}
         # Load market and team data
         self._load_market()
         self._load_esquemas()
